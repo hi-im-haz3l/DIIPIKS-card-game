@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import move from 'lodash-move'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import CARDS_CONTENT from '../lib/card-content'
 
@@ -44,7 +44,7 @@ const Home = () => {
           return (
             <motion.li
               key={`DIIPIKS-card-${id}`}
-              className={classNames(
+              className={clsx(
                 { reveal: canDrag && !isDragging },
                 'DIIPIKS-card'
               )}

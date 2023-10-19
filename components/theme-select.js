@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import Slider from 'react-slick'
-import classNames from 'classNames'
+import clsx from 'clsx'
 import { Box, IconButton } from '@chakra-ui/react'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
@@ -98,10 +98,7 @@ const ThemeSelect = ({ theme, setTheme, availableThemes, colorScheme }) => {
       <div className="DIIPIKS-theme-slider-wrapper">
         <Box
           as={Slider}
-          className={classNames(
-            { scroll: wouldScroll },
-            'DIIPIKS-theme-slider'
-          )}
+          className={clsx({ scroll: wouldScroll }, 'DIIPIKS-theme-slider')}
           {...settings}
           ref={sliderRef}
         >
