@@ -9,7 +9,7 @@ const Main = ({ themeObject, children }) => {
   return (
     <Container
       as="main"
-      maxW="container.xl"
+      maxW="8xl"
       position="relative"
       display="flex"
       flexDirection="column"

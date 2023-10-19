@@ -21,7 +21,15 @@ const NavBar = ({ themeObject }) => {
 
   return (
     <>
-      <Box maxW={{ base: '800px', lg: '1000px' }} className="DIIPIKS-navbar">
+      <Box
+        maxW={{
+          base: 'none',
+          md: 'container.sm',
+          lg: '900px',
+          xl: 'container.lg'
+        }}
+        className="DIIPIKS-navbar"
+      >
         <a href="https://diipiks.fi/" className="DIIPIKS-link">
           <img
             src="/Diipiks_Logo_160x@2x.avif"

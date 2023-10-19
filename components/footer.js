@@ -17,8 +17,13 @@ const Footer = ({ themeObject }) => {
   return (
     <Box
       className="DIIPIKS-hint"
-      display={{ base: 'none', sm: 'flex' }}
-      maxW={{ base: '800px', lg: '1000px' }}
+      display={{ base: 'none', md: 'flex' }}
+      maxW={{
+        base: 'none',
+        md: 'container.sm',
+        lg: '900px',
+        xl: 'container.lg'
+      }}
     >
       <HStack spacing={0}>
         <Key title={<IoMdReturnLeft fontSize={16} />} />

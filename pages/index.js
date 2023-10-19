@@ -12,6 +12,7 @@ const Home = () => {
 
   const [cards, setCards] = useState(CARDS_CONTENT)
   const [isDragging, setDragging] = useState(false)
+  const [animating, setAnimating] = useState(null)
 
   const moveToEnd = from => {
     setCards(prevState => move(prevState, from, prevState.length - 1))
@@ -43,12 +44,10 @@ const Home = () => {
           return (
             <motion.li
               key={`DIIPIKS-card-${id}`}
-              style={{
-                originX: 0,
-                originY: 0.5,
-                cursor: canDrag ? 'grab' : 'auto',
-                filter: canDrag ? 'brightness(1)' : 'brightness(.9)'
-              }}
+              className={classNames(
+                { reveal: canDrag && !isDragging },
+                'DIIPIKS-card'
+              )}
               animate={{
                 left: index * -CARD_OFFSET,
                 scale: 1 - index * SCALE_FACTOR,
@@ -56,24 +55,23 @@ const Home = () => {
                 opacity: index <= 4 ? 1 - index * 0.1 : 0
               }}
               drag={canDrag}
-              dragConstraints={{
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0
-              }}
               onDragStart={() => setDragging(true)}
-              onDragEnd={() => moveToEnd(index)}
               onDragEnd={(e, { offset, velocity }) => {
-                const swipe = Math.abs(offset.x * velocity.x)
-
                 setDragging(false)
+                setAnimating(id)
+
+                const swipe = Math.abs(offset.x * velocity.x)
                 if (swipe > ConfidenceThreshold) moveToEnd(index)
               }}
-              className={classNames(
-                { reveal: canDrag && !isDragging },
-                'DIIPIKS-card'
-              )}
+              onDragTransitionEnd={() => setAnimating(false)}
+              style={{
+                originX: 0,
+                originY: 0.5,
+                cursor: canDrag ? 'grab' : 'auto',
+                filter: canDrag ? 'brightness(1)' : 'brightness(.9)',
+                pointerEvents: !isDragging && animating === id ? 'none' : 'auto'
+              }}
+              dragSnapToOrigin
             >
               <div
                 className="DIIPIKS-card-inner"
