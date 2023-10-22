@@ -1,3 +1,19 @@
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #afafaf;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9f9f9f;
+}
+
 .DIIPIKS-navbar {
   position: absolute;
   top: 0;
@@ -85,18 +101,18 @@
 
 /* Style the front side (fallback if image is missing) */
 .DIIPIKS-card-front {
-  background-image: url('/Front.svg');
+  background-image: url('/placeholder/card-front.svg');
   background-repeat: no-repeat;
   color: black;
+  transform: rotateY(180deg);
   border: 1px solid #000000;
 }
 
 /* Style the back side */
 .DIIPIKS-card-rear {
-  background-image: url('/Rear.svg');
+  background-image: url('/placeholder/card-rear.svg');
   background-repeat: no-repeat;
-  color: white;
-  transform: rotateY(180deg);
+  color: black;
   border: 1px solid #000000;
 }
 
@@ -134,7 +150,7 @@
   left: 0;
   padding: 10% 15px;
   z-index: 1;
-  transition: 0.2s ease-in;
+  transition: 0.2s ease-in-out;
 }
 
 .DIIPIKS-theme-slider-wrapper {

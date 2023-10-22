@@ -13,11 +13,30 @@ import {
 import { HamburgerIcon } from '@chakra-ui/icons'
 import { IoColorPaletteOutline, IoColorPalette } from 'react-icons/io5'
 
-import ThemeSelect from './theme-select'
+import ThemeSelect from 'components/theme-select'
 
 const NavBar = ({ themeObject }) => {
-  const { theme, setTheme, colorScheme, availableThemes } = themeObject
+  const { theme } = themeObject
   const [isShowingThemeSelect, setShowingThemeSelect] = useState(false)
+
+  const ThemedMenuItem = ({ title, hoverStyle }) => {
+    const hoverColor = (theme?.colors && theme.colors[100]) || 'default.100'
+
+    return (
+      <MenuItem
+        fontWeight="semibold"
+        _hover={{
+          backgroundColor: hoverColor,
+          ...hoverStyle
+        }}
+        _focus={{
+          backgroundColor: hoverColor
+        }}
+      >
+        {title}
+      </MenuItem>
+    )
+  }
 
   return (
     <>
@@ -70,35 +89,22 @@ const NavBar = ({ themeObject }) => {
                 />
                 <MenuList minW="120px" border="1px solid #000">
                   <Link href="https://diipiks.fi/" isExternal>
-                    <MenuItem
-                      fontWeight="semibold"
-                      _hover={{
+                    <ThemedMenuItem
+                      title="Etusivu"
+                      hoverStyle={{
                         textDecoration: 'underline',
-                        textDecorationThickness: '2px',
-                        backgroundColor: `${theme}.100`
+                        textDecorationThickness: '2px'
                       }}
-                      _focus={{
-                        backgroundColor: `${theme}.100`
-                      }}
-                    >
-                      Etusivu
-                    </MenuItem>
+                    />
                   </Link>
-                  <MenuItem fontWeight="semibold">FAQ</MenuItem>
+                  <ThemedMenuItem title="FAQ" />
                 </MenuList>
               </>
             )}
           </Menu>
         </div>
       </Box>
-      {isShowingThemeSelect && (
-        <ThemeSelect
-          theme={theme}
-          setTheme={setTheme}
-          availableThemes={availableThemes}
-          colorScheme={colorScheme}
-        />
-      )}
+      {isShowingThemeSelect && <ThemeSelect {...themeObject} />}
     </>
   )
 }

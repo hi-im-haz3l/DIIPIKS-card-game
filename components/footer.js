@@ -8,7 +8,11 @@ const Footer = ({ themeObject }) => {
     const { theme } = themeObject
 
     return (
-      <Tag size="sm" background={`${theme}.900`} color={`${theme}.50`}>
+      <Tag
+        size="sm"
+        backgroundColor={(theme?.colors && theme.colors[900]) || 'default.900'}
+        color={(theme?.colors && theme.colors[50]) || 'default.50'}
+      >
         {title}
       </Tag>
     )

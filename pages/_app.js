@@ -2,35 +2,34 @@ import { useState, useEffect } from 'react'
 
 import { AnimatePresence } from 'framer-motion'
 import { ChakraProvider } from '@chakra-ui/react'
+import { SessionProvider } from 'next-auth/react'
 
-import Layout from '../components/layouts/main'
-import Fonts from '../components/fonts'
-import Theme from '../lib/theme'
-import { colorScheme } from '../lib/theme'
+import Layout from 'layouts/main'
+import AuthWrapper from 'layouts/auth-wrapper'
+import Fonts from 'components/fonts'
+import Theme from 'lib/theme'
 
-import './styles.css'
+import 'lib/styles.css'
 
-const CardGame = ({ Component, pageProps, router }) => {
-  const availableThemes = Object.keys(colorScheme || {})
-  const [theme, setTheme] = useState('black')
+const CardGame = ({ Component, pageProps: { session, ...pageProps } }) => {
+  const [availableThemes, setAvailableThemes] = useState([])
+  const [theme, setTheme] = useState('default')
 
   const themeObject = {
     theme,
-    setTheme: targetThemeName => {
-      setTheme(targetThemeName)
-      localStorage.setItem('DIIPIKS-theme', targetThemeName)
+    setTheme: selectedTheme => {
+      setTheme(selectedTheme)
+      localStorage.setItem('DIIPIKS-theme-data', JSON.stringify(selectedTheme))
     },
-    colorScheme,
-    availableThemes
+    availableThemes,
+    setAvailableThemes
   }
 
   useEffect(() => {
-    const localTheme = localStorage.getItem('DIIPIKS-theme')
+    const localTheme = localStorage.getItem('DIIPIKS-theme-data')
 
-    if (availableThemes.includes(localTheme)) {
-      setTheme(localTheme)
-    } else {
-      setTheme(availableThemes[0])
+    if (localTheme) {
+      setTheme(JSON.parse(localTheme))
     }
   }, [])
 
@@ -39,11 +38,15 @@ const CardGame = ({ Component, pageProps, router }) => {
       <Fonts />
       <Layout themeObject={themeObject}>
         <AnimatePresence>
-          <Component
-            key={router.route}
-            themeObject={themeObject}
-            {...pageProps}
-          />
+          {Component.auth ? (
+            <SessionProvider session={session}>
+              <AuthWrapper args={Component.auth}>
+                <Component themeObject={themeObject} {...pageProps} />
+              </AuthWrapper>
+            </SessionProvider>
+          ) : (
+            <Component themeObject={themeObject} {...pageProps} />
+          )}
         </AnimatePresence>
       </Layout>
     </ChakraProvider>

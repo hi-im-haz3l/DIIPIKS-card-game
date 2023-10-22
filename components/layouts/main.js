@@ -1,7 +1,5 @@
 import Head from 'next/head'
 import { Container } from '@chakra-ui/react'
-import NavBar from '../navbar'
-import Footer from '../footer'
 
 const Main = ({ themeObject, children }) => {
   const { theme } = themeObject
@@ -14,8 +12,9 @@ const Main = ({ themeObject, children }) => {
       display="flex"
       flexDirection="column"
       h="100dvh"
-      backgroundColor={`${theme}.200`}
+      backgroundColor={(theme?.colors && theme.colors[200]) || 'default.200'}
       transition=".2s"
+      overflow="hidden"
     >
       <Head>
         <title>:DIIPIKS - Card game</title>
@@ -47,9 +46,7 @@ const Main = ({ themeObject, children }) => {
         <meta property="og:title" content=":DIIPIKS - Card game" />
       </Head>
 
-      <NavBar themeObject={themeObject} />
       {children}
-      <Footer themeObject={themeObject} />
     </Container>
   )
 }

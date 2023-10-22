@@ -1,17 +1,43 @@
 import { useRef, useState, useEffect } from 'react'
 import Slider from 'react-slick'
 import clsx from 'clsx'
-import { Box, IconButton } from '@chakra-ui/react'
+import { Flex, Box, IconButton, Spinner } from '@chakra-ui/react'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons'
 
-import { countNumbersBetween } from '../utils/number'
+import { countNumbersBetween } from 'utils/number'
+import axios from 'axios'
 
-const ThemeSelect = ({ theme, setTheme, availableThemes, colorScheme }) => {
+const ThemeSelect = props => {
+  const { theme, availableThemes } = props
+
   const sliderRef = useRef()
   const [currentIndex, setCurrentIndex] = useState(null)
+  const [isFetchingAvailableThemes, setFetchingAvailableThemes] =
+    useState(false)
+  const [isFetchingSelectedTheme, setFetchingSelectedTheme] = useState(false)
   const wouldScroll = availableThemes.length > 7
+
+  const handleSelectTheme = index => {
+    const { setTheme } = props
+
+    // if (currentIndex !== null) {
+    const targetTheme = availableThemes[index] || availableThemes[0]
+    console.log(targetTheme)
+    if (!targetTheme) return null
+
+    setFetchingSelectedTheme(true)
+    axios
+      .get(`/api/utils/fetch-theme-by-id-public?_id=${targetTheme._id}`)
+      .then(response => {
+        setTheme(response.data)
+        setFetchingSelectedTheme(false)
+      })
+    // }
+
+    setCurrentIndex(index)
+  }
 
   const CustomArrow = props => {
     const { wouldScroll, className, onClick } = props
@@ -55,10 +81,7 @@ const ThemeSelect = ({ theme, setTheme, availableThemes, colorScheme }) => {
     pauseOnHover: true,
     nextArrow: <CustomArrow wouldScroll={wouldScroll} />,
     prevArrow: <CustomArrow wouldScroll={wouldScroll} />,
-    beforeChange: (current, next) => {
-      if (currentIndex !== null) setTheme(availableThemes[next])
-      setCurrentIndex(next)
-    }
+    beforeChange: (current, next) => handleSelectTheme(next)
   }
 
   const handleThemeClick = index => {
@@ -82,52 +105,78 @@ const ThemeSelect = ({ theme, setTheme, availableThemes, colorScheme }) => {
   }
 
   useEffect(() => {
-    const mountedIndex = availableThemes.findIndex(
-      availableTheme => availableTheme === theme
-    )
+    const { setAvailableThemes } = props
 
-    sliderRef.current.slickGoTo(mountedIndex)
+    setFetchingAvailableThemes(true)
+    axios.get('/api/utils/fetch-themes-preview-public').then(response => {
+      const availableThemes = response.data
+      setAvailableThemes(availableThemes)
+
+      const mountedIndex = availableThemes.findIndex(
+        ({ _id }) => _id === theme._id
+      )
+      sliderRef.current.slickGoTo(mountedIndex)
+      setFetchingAvailableThemes(false)
+    })
   }, [])
 
   return (
-    <div
-      className="DIIPIKS-theme-select-container"
-      style={{ opacity: currentIndex === null ? 0 : 1 }}
-    >
-      <span className="DIIPIKS-theme-name">{theme}</span>
-      <div className="DIIPIKS-theme-slider-wrapper">
-        <Box
-          as={Slider}
-          className={clsx({ scroll: wouldScroll }, 'DIIPIKS-theme-slider')}
-          {...settings}
-          ref={sliderRef}
-        >
-          {availableThemes.map((themeName, index) => {
-            const isSelected = themeName === theme
+    <>
+      <div
+        className="DIIPIKS-theme-select-container"
+        style={{ opacity: currentIndex === null ? 0 : 1 }}
+      >
+        <span className="DIIPIKS-theme-name">{theme.title}</span>
+        <div className="DIIPIKS-theme-slider-wrapper">
+          <Box
+            as={Slider}
+            className={clsx({ scroll: wouldScroll }, 'DIIPIKS-theme-slider')}
+            {...settings}
+            ref={sliderRef}
+          >
+            {availableThemes.map(({ _id, colorPreview }, index) => {
+              const isSelected = _id === theme._id
 
-            return (
-              <Box
-                key={`theme-${themeName}`}
-                display="flex !important"
-                alignItems="center"
-                onClick={isSelected ? null : () => handleThemeClick(index)}
-              >
-                <span
-                  style={{
-                    backgroundColor: colorScheme[themeName][200],
-                    outlineWidth: isSelected ? '1px' : '2px'
-                  }}
-                  className="theme-color-hero"
-                />
-              </Box>
-            )
-          })}
-        </Box>
-        <div className="selected-theme-container">
-          <span className="selected-theme-ring" />
+              return (
+                <Box
+                  key={`theme-${_id}`}
+                  display="flex !important"
+                  alignItems="center"
+                  onClick={isSelected ? null : () => handleThemeClick(index)}
+                >
+                  <span
+                    style={{
+                      backgroundColor: colorPreview,
+                      outlineWidth: isSelected ? '1px' : '2px'
+                    }}
+                    className="theme-color-hero"
+                  />
+                </Box>
+              )
+            })}
+          </Box>
+          {availableThemes.length ? (
+            <div className="selected-theme-container">
+              <span className="selected-theme-ring" />
+            </div>
+          ) : null}
         </div>
       </div>
-    </div>
+      {(isFetchingAvailableThemes || isFetchingSelectedTheme) && (
+        <Flex
+          justifyContent="center"
+          className="DIIPIKS-theme-select-container"
+        >
+          <Spinner
+            thickness="4px"
+            size="lg"
+            speed="0.6s"
+            color="#000"
+            my={2.5}
+          />
+        </Flex>
+      )}
+    </>
   )
 }
 
