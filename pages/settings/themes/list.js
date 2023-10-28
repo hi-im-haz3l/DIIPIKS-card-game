@@ -321,49 +321,42 @@ const ColorsTable = ({ baseURL }) => {
         Header: 'Title',
         accessor: 'themeData',
         Cell: ({ value }) => (
-          <Flex
-            justifyContent="center"
-            alignItems="center"
-            maxW={{ base: '200px', sm: '300px' }}
-          >
+          <Flex alignItems="center" maxW={{ base: '200px', sm: '300px' }}>
             <Text
               maxW={100}
               whiteSpace="nowrap"
               overflow="hidden"
               textOverflow="ellipsis"
-              mr={2}
+              mx={1}
             >
               {value.title}
             </Text>
             {value.isPublic ? (
-              <>
-                <Box mr={1}>
+              <Tooltip label="Variant's link" hasArrow>
+                <HStack
+                p={1}
+                  gap={1}
+                  onClick={e => {
+                    e.stopPropagation()
+                    navigator.clipboard.writeText(
+                      `${baseURL}/variant/${value.themeId}`
+                    )
+                    toast({
+                      title: 'Coppied!',
+                      status: 'success',
+                      duration: 5000,
+                      isClosable: true
+                    })
+                  }}
+                >
                   <MdPublic />
-                </Box>
-                <Tooltip label="Variant's link" hasArrow>
-                  <Box>
-                    <BiLink
-                      fontSize={20}
-                      onClick={e => {
-                        e.stopPropagation()
-                        navigator.clipboard.writeText(
-                          `${baseURL}/variant/${value.themeId}`
-                        )
-                        toast({
-                          title: 'Coppied!',
-                          status: 'success',
-                          duration: 5000,
-                          isClosable: true
-                        })
-                      }}
-                    />
-                  </Box>
-                </Tooltip>
-              </>
+                  <BiLink fontSize={19} />
+                </HStack>
+              </Tooltip>
             ) : (
               <BiSolidHide color="#E53E3E" fontSize={20} />
             )}
-            <Box className="table-row-hover-icon" opacity={0} mr={2}>
+            <Box className="table-row-hover-icon" opacity={0}>
               <BiPencil fontSize={20} />
             </Box>
           </Flex>
