@@ -1,13 +1,16 @@
 import Head from 'next/head'
+import { Container } from '@chakra-ui/react'
 
 const Layout = ({ title, children }) => (
-  <article
-    style={{
-      position: 'relative',
-      display: 'flex',
-      flexGrow: '1',
-      flexDirection: 'column'
-    }}
+  <Container
+    as="main"
+    maxW="8xl"
+    position="relative"
+    display="flex"
+    flexDirection="column"
+    h="100dvh"
+    transition=".2s"
+    overflow="hidden"
   >
     {title && (
       <Head>
@@ -21,7 +24,7 @@ const Layout = ({ title, children }) => (
       </Head>
     )}
     {children}
-  </article>
+  </Container>
 )
 
 export default Layout

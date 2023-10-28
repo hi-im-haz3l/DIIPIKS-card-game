@@ -9,7 +9,7 @@ import LoadingTag from 'components/loading-tag'
 import BackLink from 'components/back-link'
 import ThemeBuilder from 'components/theme-builder'
 
-const CreateTheme = () => {
+const EditTheme = () => {
   const toast = useToast()
   const router = useRouter()
   const { themeId } = router.query
@@ -73,7 +73,7 @@ const CreateTheme = () => {
     !!Object.values(themeData || {}).length && (
       <Layout title="Edit theme">
         <Flex gap={2} my={3}>
-          <BackLink title="Themes" href="./list" />
+          <BackLink color="#fff" title="Themes" href="./list" />
           <HStack ml="auto">
             <Switch
               id="isPublic"
@@ -82,55 +82,60 @@ const CreateTheme = () => {
                 handleInputChange('isPublic', !themeData.isPublic)
               }
             />
-            <Text fontWeight="semibold">Publicly visible</Text>
+            <Text color="#fff" fontWeight="semibold">
+              Publicly visible
+            </Text>
           </HStack>
         </Flex>
         <Box bg="#fff" flexGrow={1} position="relative" border="1px solid #444">
-          <Flex
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            flexDirection="column"
-            overflow="auto"
-          >
-            <ThemeBuilder
-              themeData={themeData}
-              handleInputChange={handleInputChange}
-            />
-            <Flex my={6} justifyContent="center">
-              <SlidingButton
-                isLoading={isProcessing}
-                ariaLabel="Publish"
-                colorScheme="blue"
-                href="#"
-                icon={<FaTelegramPlane />}
-                onClick={submitTheme}
-              >
-                Update
-              </SlidingButton>
-            </Flex>
-            {isProcessing && (
-              <Flex
-                alignItems="center"
-                position="fixed"
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
-                backdropFilter="blur(3px)"
-                bg="#00000033"
-                zIndex={5}
-              >
-                <LoadingTag m="auto" />
+          <form>
+            <Flex
+              position="absolute"
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              flexDirection="column"
+              overflow="auto"
+            >
+              <ThemeBuilder
+                themeData={themeData}
+                handleInputChange={handleInputChange}
+              />
+              <Flex my={6} justifyContent="center">
+                <SlidingButton
+                  isLoading={isProcessing}
+                  ariaLabel="Publish"
+                  colorScheme="blue"
+                  href="#"
+                  icon={<FaTelegramPlane />}
+                  onClick={submitTheme}
+                  type="submit"
+                >
+                  Update
+                </SlidingButton>
               </Flex>
-            )}
-          </Flex>
+              {isProcessing && (
+                <Flex
+                  alignItems="center"
+                  position="fixed"
+                  top={0}
+                  left={0}
+                  right={0}
+                  bottom={0}
+                  backdropFilter="blur(3px)"
+                  bg="#00000033"
+                  zIndex={5}
+                >
+                  <LoadingTag m="auto" />
+                </Flex>
+              )}
+            </Flex>
+          </form>
         </Box>
       </Layout>
     )
   )
 }
 
-export default CreateTheme
+export default EditTheme

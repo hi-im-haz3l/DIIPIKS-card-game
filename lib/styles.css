@@ -55,7 +55,7 @@
   height: auto;
   width: 230px;
   aspect-ratio: 18/25;
-  margin: 5px 0 70px 30px;
+  margin-bottom: 30px;
 }
 
 .DIIPIKS-card {
@@ -65,7 +65,8 @@
   border-radius: 8px;
   list-style: none;
   aspect-ratio: 18/25;
-  transition: filter 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  transition: filter 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28),
+    rotate 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
   pointer-events: none;
 }
 
@@ -75,7 +76,7 @@
   width: 100%;
   height: 100%;
   text-align: center;
-  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  transition: transform 0.4s cubic-bezier(1, 0, 0.58, 1);
   transform-style: preserve-3d;
   pointer-events: none;
 }
@@ -101,6 +102,7 @@
 
 /* Style the front side (fallback if image is missing) */
 .DIIPIKS-card-front {
+  background-color: #fff;
   background-image: url('/placeholder/card-front.svg');
   background-repeat: no-repeat;
   color: black;
@@ -110,6 +112,7 @@
 
 /* Style the back side */
 .DIIPIKS-card-rear {
+  background-color: #fff;
   background-image: url('/placeholder/card-rear.svg');
   background-repeat: no-repeat;
   color: black;
@@ -136,7 +139,16 @@
 
 .card-count {
   font-weight: 500;
-  margin-right: 150px;
+  margin-right: 180px;
+  margin-bottom: 0.5rem;
+  font-size: 16px;
+}
+
+.DIIPIKS-navigation-buttons {
+  width: 250px;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 100px;
 }
 
 .DIIPIKS-top-controls {
@@ -228,4 +240,9 @@
 .hint-text.separator {
   padding-left: 3px;
   padding-right: 5px;
+}
+
+.table-row:hover .table-row-hover-icon {
+  transition: opacity 0.2s;
+  opacity: 1;
 }

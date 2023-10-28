@@ -9,14 +9,9 @@ import LoadingTag from 'components/loading-tag'
 import BackLink from 'components/back-link'
 import ThemeBuilder from 'components/theme-builder'
 
-const CreateTheme = () => {
+const CreateTheme = ({ baseURL }) => {
   const toast = useToast()
   const router = useRouter()
-
-  let baseURL
-  if (typeof window !== 'undefined') {
-    baseURL = window.location.origin
-  }
 
   const [isProcessing, setProcessing] = useState(false)
   const [themeData, setThemeData] = useState({
@@ -25,17 +20,10 @@ const CreateTheme = () => {
       front: `${baseURL}/placeholder/card-front.svg`,
       rear: `${baseURL}/placeholder/card-rear.svg`
     },
+    cardContents: [],
     colors: {
-      50: '#eceff1',
-      100: '#cfd8dc',
-      200: '#b0bec5',
-      300: '#90a4ae',
-      400: '#78909c',
-      500: '#607d8b',
-      600: '#546e7a',
-      700: '#455a64',
-      800: '#37474f',
-      900: '#263238'
+      primary: '#b0bec5',
+      secondary: '#263238'
     }
   })
 
@@ -85,50 +73,53 @@ const CreateTheme = () => {
   return (
     <Layout title="Create theme">
       <Flex gap={2} my={3}>
-        <BackLink title="Themes" href="./list" />
+        <BackLink color="#fff" title="Themes" href="./list" />
       </Flex>
       <Box bg="#fff" flexGrow={1} position="relative" border="1px solid #444">
-        <Flex
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          flexDirection="column"
-          overflow="auto"
-        >
-          <ThemeBuilder
-            themeData={themeData}
-            handleInputChange={handleInputChange}
-          />
-          <Flex my={6} justifyContent="center">
-            <SlidingButton
-              isLoading={isProcessing}
-              ariaLabel="Publish"
-              colorScheme="blue"
-              href="#"
-              icon={<FaTelegramPlane />}
-              onClick={submitTheme}
-            >
-              Publish
-            </SlidingButton>
-          </Flex>
-          {isProcessing && (
-            <Flex
-              alignItems="center"
-              position="fixed"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              backdropFilter="blur(3px)"
-              bg="#00000033"
-              zIndex={5}
-            >
-              <LoadingTag m="auto" />
+        <form>
+          <Flex
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            flexDirection="column"
+            overflow="auto"
+          >
+            <ThemeBuilder
+              themeData={themeData}
+              handleInputChange={handleInputChange}
+            />
+            <Flex my={6} justifyContent="center">
+              <SlidingButton
+                isLoading={isProcessing}
+                ariaLabel="Publish"
+                colorScheme="blue"
+                href="#"
+                icon={<FaTelegramPlane />}
+                onClick={submitTheme}
+                type="submit"
+              >
+                Publish
+              </SlidingButton>
             </Flex>
-          )}
-        </Flex>
+            {isProcessing && (
+              <Flex
+                alignItems="center"
+                position="fixed"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                backdropFilter="blur(3px)"
+                bg="#00000033"
+                zIndex={5}
+              >
+                <LoadingTag m="auto" />
+              </Flex>
+            )}
+          </Flex>
+        </form>
       </Box>
     </Layout>
   )

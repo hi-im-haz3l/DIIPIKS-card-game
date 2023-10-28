@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react'
-
 import { AnimatePresence } from 'framer-motion'
 import { ChakraProvider } from '@chakra-ui/react'
 import { SessionProvider } from 'next-auth/react'
@@ -12,40 +10,24 @@ import Theme from 'lib/theme'
 import 'lib/styles.css'
 
 const CardGame = ({ Component, pageProps: { session, ...pageProps } }) => {
-  const [availableThemes, setAvailableThemes] = useState([])
-  const [theme, setTheme] = useState('default')
-
-  const themeObject = {
-    theme,
-    setTheme: selectedTheme => {
-      setTheme(selectedTheme)
-      localStorage.setItem('DIIPIKS-theme-data', JSON.stringify(selectedTheme))
-    },
-    availableThemes,
-    setAvailableThemes
+  let baseURL
+  if (typeof window !== 'undefined') {
+    baseURL = window.location.origin
   }
-
-  useEffect(() => {
-    const localTheme = localStorage.getItem('DIIPIKS-theme-data')
-
-    if (localTheme) {
-      setTheme(JSON.parse(localTheme))
-    }
-  }, [])
 
   return (
     <ChakraProvider theme={Theme}>
       <Fonts />
-      <Layout themeObject={themeObject}>
+      <Layout>
         <AnimatePresence>
           {Component.auth ? (
             <SessionProvider session={session}>
               <AuthWrapper args={Component.auth}>
-                <Component themeObject={themeObject} {...pageProps} />
+                <Component baseURL={baseURL} {...pageProps} />
               </AuthWrapper>
             </SessionProvider>
           ) : (
-            <Component themeObject={themeObject} {...pageProps} />
+            <Component baseURL={baseURL} {...pageProps} />
           )}
         </AnimatePresence>
       </Layout>

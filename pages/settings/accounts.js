@@ -47,7 +47,7 @@ const UsersTable = ({ authData }) => {
   const invisibleColumns = ['email', 'role', 'latestSessionFormated']
   const [selectedRows, setSelectedRows] = useState([])
   const [globalFilter, setGlobalFilter] = useState('')
-  const [forceSelectionIdxs, setForceSelectionIdxs] = useState([])
+  const [selectionIds, setSelectionIds] = useState([])
 
   const [alertColor, setAlertColor] = useState('red')
   const [alertText, setAlertText] = useState('')
@@ -324,7 +324,7 @@ const UsersTable = ({ authData }) => {
 
   useEffect(() => {
     const selected = usersData.filter((e, idx) => {
-      return Object.keys(forceSelectionIdxs).some(id => {
+      return Object.keys(selectionIds).some(id => {
         return idx === Number(id)
       })
     })
@@ -341,7 +341,7 @@ const UsersTable = ({ authData }) => {
       .pop()
 
     setAdminState(willAdmin)
-  }, [forceSelectionIdxs])
+  }, [selectionIds])
 
   useEffect(() => {
     fetchData()
@@ -488,7 +488,7 @@ const UsersTable = ({ authData }) => {
                   { key: 'latestSession', order: 'desc' }
                 ]}
                 onChangeSelectedRowsId={selectedIds => {
-                  setForceSelectionIdxs(selectedIds)
+                  setSelectionIds(selectedIds)
                 }}
               />
             </Flex>

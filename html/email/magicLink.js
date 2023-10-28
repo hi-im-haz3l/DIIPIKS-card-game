@@ -7,7 +7,7 @@ export const magicEmailHtml = (url, email) => `
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="color-scheme" content="light dark" />
         <meta name="supported-color-schemes" content="light dark" />
-        <title>DocGi's magic link</title>
+        <title>:DIIPIKS's magic link</title>
         <style type="text/css" rel="stylesheet" media="all">
         @import url('https://fonts.googleapis.com/css?family=Inter:400,700&display=swap');
         body {
@@ -329,8 +329,8 @@ export const magicEmailHtml = (url, email) => `
               >
                 <tr>
                   <td class="email-masthead">
-                    <a href="${process.env.NEXT_PUBLIC_BASE_URL}" class="f-fallback email-masthead_name">
-                        DocGi Authentication 🦕
+                    <a href="https://choicely.com" class="f-fallback email-masthead_name">
+                    Choicely Authentication 🦕
                     </a>
                   </td>
                 </tr>
@@ -354,7 +354,7 @@ export const magicEmailHtml = (url, email) => `
                           <div class="f-fallback">
                             <h1>Hei 👋</h1>
                             <p>
-                              Click the button below to log in to DocGi.<br />
+                              Click the button below to log in to your :DIIPIKS admin panel.<br />
                               This button will expire in 10 minutes. Be quick :)
                             </p>
                             <table
@@ -380,7 +380,7 @@ export const magicEmailHtml = (url, email) => `
                                           href="${url}"
                                           class="f-fallback button"
                                           target="_blank"
-                                          >Login to DocGi</a
+                                          >Login to :DIIPIKS</a
                                         >
                                       </td>
                                     </tr>
@@ -392,12 +392,12 @@ export const magicEmailHtml = (url, email) => `
                               Confirming this request will securely log you in using
                               ${email}.
                             </p>
-                            <p>Best regards,<br />DocGi Team</p>
+                            <p>Best regards,<br />Choicely Web Team</p>
                             <table class="body-sub" role="presentation">
                               <tr>
                                 <td>
                                   <p class="f-fallback sub">
-                                    If you’re having trouble with the button above,
+                                    If you're having trouble with the button above,
                                     copy and paste the URL below into your web
                                     browser.
                                   </p>
@@ -424,7 +424,7 @@ export const magicEmailHtml = (url, email) => `
                       <tr>
                         <td class="content-cell" align="center">
                           <p class="f-fallback sub align-center">
-                            Made with ❤️ by DocGi Team
+                            Made with ❤️ by Choicely Web Team
                           </p>
                         </td>
                       </tr>
@@ -440,4 +440,4 @@ export const magicEmailHtml = (url, email) => `
   `
 
 export const magicEmailText = url =>
-  `Use the link below to log in to DocGi. This link will expire in 10 minutes. Be quick :) ${url}`
+  `Use the link below to log in to your :DIIPIKS admin panel. This link will expire in 10 minutes. Be quick :) ${url}`

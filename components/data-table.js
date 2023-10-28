@@ -78,13 +78,15 @@ const colourStyles = {
 const DataTable = ({
   columns,
   data,
-  pageSizes = [10, 40, 100],
+  pageSizes = [10, 30, 100],
   size = 'sm',
   variant = 'simple',
-  hiddenColumns,
-  defaultSortBy,
+  hiddenColumns = [],
+  defaultSortBy = [],
   onChangeSelectedRowsId,
   globalFilter,
+  onRowClick = null,
+  hasHoverIcon = false,
   ...rest
 }) => {
   const {
@@ -121,18 +123,21 @@ const DataTable = ({
     usePagination,
     useRowSelect,
     hooks => {
-      hooks.visibleColumns.push(columns => [
-        {
-          id: 'selection',
-          Header: ({ getToggleAllPageRowsSelectedProps }) => (
-            <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
-          ),
-          Cell: ({ row }) => (
-            <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-          )
-        },
-        ...columns
-      ])
+      onChangeSelectedRowsId &&
+        hooks.visibleColumns.push(columns => [
+          {
+            id: 'selection',
+            Header: ({ getToggleAllPageRowsSelectedProps }) => (
+              <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+            ),
+            Cell: ({ row }) => (
+              <div onClick={e => e.stopPropagation()}>
+                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              </div>
+            )
+          },
+          ...columns
+        ])
     }
   )
 
@@ -217,9 +222,17 @@ const DataTable = ({
               prepareRow(row)
               return (
                 <Tr
+                  className="table-row"
                   key={`row-${i}`}
                   {...row.getRowProps()}
-                  _hover={variant === 'simple' && { bgColor: 'blue.50' }}
+                  _hover={
+                    variant === 'simple' && {
+                      bgColor: 'blue.50',
+                      position: hasHoverIcon && 'relative'
+                    }
+                  }
+                  onClick={() => onRowClick && onRowClick(row.original)}
+                  cursor={onRowClick && 'pointer'}
                 >
                   {row.cells.map((cell, idx) => {
                     return (
@@ -257,6 +270,7 @@ const DataTable = ({
             }}
             options={displaySelectOption}
             styles={colourStyles}
+            menuPlacement="top"
           />
         </Flex>
         <ButtonGroup mt={3} order={{ base: 2, md: 1 }} isAttached>
@@ -306,6 +320,7 @@ const DataTable = ({
             }}
             options={pageSelectOption}
             styles={colourStyles}
+            menuPlacement="top"
           />
         </Flex>
       </Flex>

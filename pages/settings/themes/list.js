@@ -1,4 +1,5 @@
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import DataTable from 'components/data-table'
 import {
   Text,
@@ -32,19 +33,19 @@ import {
   BsThreeDotsVertical,
   BsFillPauseFill,
   BsFillPlayFill,
-  BsEyedropper,
-  BsThreeDots
+  BsEyedropper
 } from 'react-icons/bs'
 import { MdPublic } from 'react-icons/md'
-import { BiSearchAlt2, BiSolidHide, BiPencil } from 'react-icons/bi'
+import { BiSearchAlt2, BiSolidHide, BiPencil, BiLink } from 'react-icons/bi'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import { IoCloseCircle } from 'react-icons/io5'
 import BackLink from 'components/back-link'
 import ConfirmationDialog from 'components/confirm-dialog'
 import LoadingTag from 'components/loading-tag'
 
-const ColorsTable = () => {
+const ColorsTable = ({ baseURL }) => {
   const toast = useToast()
+  const router = useRouter()
   const [SuspensionState, setSuspensionState] = useState(null)
 
   const [colorsData, setColorsData] = useState([])
@@ -62,7 +63,7 @@ const ColorsTable = () => {
   ]
   const [selectedRows, setSelectedRows] = useState([])
   const [globalFilter, setGlobalFilter] = useState('')
-  const [forceSelectionIdxs, setForceSelectionIdxs] = useState([])
+  const [selectionIds, setSelectionIds] = useState([])
 
   const [alertColor, setAlertColor] = useState('red')
   const [alertText, setAlertText] = useState('')
@@ -73,7 +74,7 @@ const ColorsTable = () => {
   const cancelRef = useRef(null)
 
   const ColorPill = ({ colorCode, colorKey, themeTitle }) => (
-    <Tooltip label={`${themeTitle} ${colorKey}`} hasArrow>
+    <Tooltip label={`${themeTitle}'s ${colorKey}`} hasArrow>
       <Box
         h={7}
         w={7}
@@ -84,7 +85,8 @@ const ColorsTable = () => {
         position="relative"
         overflow="hidden"
         _hover={{ '&>div': { opacity: 1 } }}
-        onClick={() => {
+        onClick={e => {
+          e.stopPropagation()
           navigator.clipboard.writeText(colorCode)
           toast({
             title: 'Coppied!',
@@ -145,7 +147,8 @@ const ColorsTable = () => {
       ...entry,
       themeData: {
         title: entry.title,
-        isPublic: entry.isPublic
+        isPublic: entry.isPublic,
+        themeId: entry._id
       },
       cardData: {
         cardDesigns: entry.cardDesigns,
@@ -333,10 +336,36 @@ const ColorsTable = () => {
               {value.title}
             </Text>
             {value.isPublic ? (
-              <MdPublic />
+              <>
+                <Box mr={1}>
+                  <MdPublic />
+                </Box>
+                <Tooltip label="Variant's link" hasArrow>
+                  <Box>
+                    <BiLink
+                      fontSize={20}
+                      onClick={e => {
+                        e.stopPropagation()
+                        navigator.clipboard.writeText(
+                          `${baseURL}/variant/${value.themeId}`
+                        )
+                        toast({
+                          title: 'Coppied!',
+                          status: 'success',
+                          duration: 5000,
+                          isClosable: true
+                        })
+                      }}
+                    />
+                  </Box>
+                </Tooltip>
+              </>
             ) : (
               <BiSolidHide color="#E53E3E" fontSize={20} />
             )}
+            <Box className="table-row-hover-icon" opacity={0} mr={2}>
+              <BiPencil fontSize={20} />
+            </Box>
           </Flex>
         )
       },
@@ -346,17 +375,16 @@ const ColorsTable = () => {
         Cell: ({ value }) => (
           <Flex gap={2} justifyContent="center" alignItems="center">
             {Object.keys(value.colors || {}).map(
-              (palateKey, i) =>
-                i < 3 && (
+              palateKey =>
+                (palateKey === 'primary' || palateKey === 'secondary') && (
                   <ColorPill
-                    key={`${value.id}-${value}`}
+                    key={`${value.themeId}-${palateKey}`}
                     colorKey={palateKey}
                     themeTitle={value.title}
                     colorCode={value.colors[palateKey]}
                   />
                 )
             )}
-            <BsThreeDots />
           </Flex>
         )
       },
@@ -387,26 +415,48 @@ const ColorsTable = () => {
               size="sm"
               m={{ base: -2, sm: -1 }}
               transform="translateX(-.5em)"
+              onClick={e => e.stopPropagation()}
             />
             <MenuList size="sm" fontSize={16} minW={28}>
               {value.isPublic ? (
-                <MenuItem
-                  onClick={() =>
-                    showPrompt(
-                      'yellow',
-                      'De-listed color?',
-                      `Are you sure to suspend "${value.title}"?`,
-                      'Suspend',
-                      () => () => handleState(value._id, false)
-                    )
-                  }
-                  icon={<BsFillPauseFill fontSize={20} />}
-                >
-                  Suspend
-                </MenuItem>
+                <>
+                  <MenuItem
+                    icon={<BiLink fontSize={20} />}
+                    onClick={e => {
+                      e.stopPropagation()
+                      navigator.clipboard.writeText(
+                        `${baseURL}/variant/${value.themeId}`
+                      )
+                      toast({
+                        title: 'Coppied!',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true
+                      })
+                    }}
+                  >
+                    Share
+                  </MenuItem>
+                  <MenuItem
+                    onClick={e => {
+                      e.stopPropagation()
+                      showPrompt(
+                        'yellow',
+                        'De-listed color?',
+                        `Are you sure to suspend "${value.title}"?`,
+                        'Suspend',
+                        () => () => handleState(value._id, false)
+                      )
+                    }}
+                    icon={<BsFillPauseFill fontSize={20} />}
+                  >
+                    Suspend
+                  </MenuItem>
+                </>
               ) : (
                 <MenuItem
-                  onClick={() =>
+                  onClick={e => {
+                    e.stopPropagation()
                     showPrompt(
                       'yellow',
                       'Make color public?',
@@ -414,7 +464,7 @@ const ColorsTable = () => {
                       'Publish',
                       () => () => handleState(value._id, true)
                     )
-                  }
+                  }}
                   icon={<BsFillPlayFill fontSize={20} />}
                 >
                   Publish
@@ -429,7 +479,8 @@ const ColorsTable = () => {
               </NextLink>
               <Divider borderWidth="1px" />
               <MenuItem
-                onClick={() =>
+                onClick={e => {
+                  e.stopPropagation()
                   showPrompt(
                     'red',
                     'Remove theme',
@@ -437,7 +488,7 @@ const ColorsTable = () => {
                     'Delete',
                     () => () => handleDelete(value._id)
                   )
-                }
+                }}
                 color="red"
                 icon={<RiDeleteBinLine fontSize={20} />}
               >
@@ -469,7 +520,7 @@ const ColorsTable = () => {
 
   useEffect(() => {
     const selected = colorsData.filter((e, idx) => {
-      return Object.keys(forceSelectionIdxs).some(id => {
+      return Object.keys(selectionIds).some(id => {
         return idx === Number(id)
       })
     })
@@ -486,7 +537,7 @@ const ColorsTable = () => {
       .pop()
 
     setSuspensionState(willSuspend)
-  }, [forceSelectionIdxs])
+  }, [selectionIds])
 
   useEffect(() => {
     fetchData()
@@ -645,13 +696,13 @@ const ColorsTable = () => {
                 data={colorsData}
                 hiddenColumns={invisibleColumns}
                 globalFilter={globalFilter}
-                defaultSortBy={[
-                  { key: 'updateDate', order: 'desc' },
-                  { key: 'creationDate', order: 'desc' }
-                ]}
+                defaultSortBy={[{ key: 'updateDate', order: 'desc' }]}
                 onChangeSelectedRowsId={selectedIds => {
-                  setForceSelectionIdxs(selectedIds)
+                  setSelectionIds(selectedIds)
                 }}
+                onRowClick={rowData =>
+                  rowData?._id && router.push(`edit?themeId=${rowData._id}`)
+                }
               />
             </Flex>
           </Flex>

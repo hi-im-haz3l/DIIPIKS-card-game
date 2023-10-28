@@ -30,9 +30,9 @@ const sendVerificationRequest = async ({ identifier, url }) => {
   return new Promise((resolve, reject) => {
     transporter.sendMail(
       {
-        from: `"DocGi Authenticator 🦕" ${process.env.EMAIL_FROM}`,
+        from: `"Choicely Authenticator 🦕" ${process.env.EMAIL_FROM}`,
         to: identifier,
-        subject: 'DocGi magic link',
+        subject: ':DIIPIKS admin panel magic link',
         text: magicEmailText(url),
         html: magicEmailHtml(url, sanitizedEmail)
       },

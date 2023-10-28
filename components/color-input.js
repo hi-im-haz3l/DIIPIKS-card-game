@@ -1,14 +1,7 @@
 import { useState } from 'react'
 import ReactGPicker from 'react-gcolor-picker'
-import {
-  Box,
-  Input,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  InputGroup,
-  InputLeftAddon
-} from '@chakra-ui/react'
+import { Box, Input, InputGroup, InputLeftAddon } from '@chakra-ui/react'
+import FormInputWrapper from 'components/form-control-wrapper'
 
 const ColorInput = ({ value, label, palateKey, onChange, isRequired }) => {
   const [isShowPicker, setShowPicker] = useState(false)
@@ -45,12 +38,13 @@ const ColorInput = ({ value, label, palateKey, onChange, isRequired }) => {
           />
         </>
       )}
-      <FormControl
-        isInvalid={!value}
+      <FormInputWrapper
+        value={value}
+        label={label}
+        fieldKey={`palate.${palateKey}`}
         onClick={() => setShowPicker(true)}
         isRequired={isRequired}
       >
-        <FormLabel htmlFor={`palate.${palateKey}`}>{label}</FormLabel>
         <InputGroup>
           <InputLeftAddon bg={value} />
           <Input
@@ -61,10 +55,7 @@ const ColorInput = ({ value, label, palateKey, onChange, isRequired }) => {
             readOnly
           />
         </InputGroup>
-        {!value && (
-          <FormErrorMessage>&quot;{label}&quot; is required!</FormErrorMessage>
-        )}
-      </FormControl>
+      </FormInputWrapper>
     </Box>
   )
 }
