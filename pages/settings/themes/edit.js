@@ -138,4 +138,9 @@ const EditTheme = () => {
   )
 }
 
+EditTheme.auth = {
+  authenticate: true,
+  isAdmin: true
+}
+
 export default EditTheme
