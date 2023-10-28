@@ -125,4 +125,9 @@ const CreateTheme = ({ baseURL }) => {
   )
 }
 
+CreateTheme.auth = {
+  authenticate: true,
+  isAdmin: true
+}
+
 export default CreateTheme

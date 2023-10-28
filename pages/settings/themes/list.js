@@ -334,8 +334,9 @@ const ColorsTable = ({ baseURL }) => {
             {value.isPublic ? (
               <Tooltip label="Variant's link" hasArrow>
                 <HStack
-                p={1}
+                  p={1}
                   gap={1}
+                  borderRadius="md"
                   onClick={e => {
                     e.stopPropagation()
                     navigator.clipboard.writeText(
@@ -348,6 +349,7 @@ const ColorsTable = ({ baseURL }) => {
                       isClosable: true
                     })
                   }}
+                  _hover={{ backgroundColor: '#00000025' }}
                 >
                   <MdPublic />
                   <BiLink fontSize={19} />

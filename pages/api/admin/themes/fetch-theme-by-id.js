@@ -3,7 +3,7 @@ import clientPromise from 'lib/mongodb'
 import { authOptions } from 'api/auth/[...nextauth]'
 import { ObjectId } from 'mongodb'
 
-export default async function FetchThemes(req, res) {
+export default async function FetchThemeById(req, res) {
   const session = await getServerSession(req, res, authOptions)
   const { _id } = req.query
 

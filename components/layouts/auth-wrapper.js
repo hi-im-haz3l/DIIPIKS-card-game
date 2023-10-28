@@ -2,7 +2,7 @@ import { useEffect, useState, cloneElement } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
-import { Center } from '@chakra-ui/react'
+import { Center, Container } from '@chakra-ui/react'
 import LoadingTag from 'components/loading-tag'
 
 const AuthWrapper = ({ args, children }) => {
@@ -51,15 +51,28 @@ const AuthWrapper = ({ args, children }) => {
     setReady(true)
   }, [args, status])
 
-  return isReady ? (
-    cloneElement(children, {
-      authData: data,
-      authStatus: status
-    })
-  ) : (
-    <Center w="100%" h="100%">
-      <LoadingTag m="auto" />
-    </Center>
+  return (
+    <Container
+      as="main"
+      maxW="8xl"
+      position="relative"
+      display="flex"
+      flexDirection="column"
+      h="100dvh"
+      transition=".2s"
+      overflow="hidden"
+    >
+      {isReady ? (
+        cloneElement(children, {
+          authData: data,
+          authStatus: status
+        })
+      ) : (
+        <Center w="100%" h="100%">
+          <LoadingTag m="auto" />
+        </Center>
+      )}
+    </Container>
   )
 }
 

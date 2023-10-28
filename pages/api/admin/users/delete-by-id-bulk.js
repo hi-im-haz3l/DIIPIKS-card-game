@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth/next'
 import clientPromise from 'lib/mongodb'
 import { authOptions } from 'api/auth/[...nextauth]'
 
-export default async function ExtendByIdBulk(req, res) {
+export default async function DeleteByIdBulk(req, res) {
   const session = await getServerSession(req, res, authOptions)
   const { _id } = req.body
 

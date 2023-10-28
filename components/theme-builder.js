@@ -212,7 +212,7 @@ const ThemeBuilder = ({ themeData, handleInputChange }) => {
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>{`Card #${currentlyEditing}`}</ModalHeader>
+            <ModalHeader>{`Card #${currentlyEditing + 1}`}</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Text fontWeight="400">Category</Text>
