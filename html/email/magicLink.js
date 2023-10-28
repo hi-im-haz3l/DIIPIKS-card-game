@@ -354,7 +354,7 @@ export const magicEmailHtml = (url, email) => `
                           <div class="f-fallback">
                             <h1>Hei 👋</h1>
                             <p>
-                              Click the button below to log in to your :DIIPIKS admin panel.<br />
+                              Click the button below to log in to your :DIIPIKS Admin panel.<br />
                               This button will expire in 10 minutes. Be quick :)
                             </p>
                             <table
@@ -380,7 +380,7 @@ export const magicEmailHtml = (url, email) => `
                                           href="${url}"
                                           class="f-fallback button"
                                           target="_blank"
-                                          >Login to :DIIPIKS</a
+                                          >Login to Admin panel</a
                                         >
                                       </td>
                                     </tr>
