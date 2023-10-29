@@ -55,7 +55,7 @@ const UsersTable = ({ authData }) => {
   const [alertActionHandle, setAlertActionHandle] = useState(undefined)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const cancelRef = useRef(null)
+  const searchRef = useRef(null)
 
   const selectedSelf = selectedRows.includes(authData.user.id)
 
@@ -363,7 +363,11 @@ const UsersTable = ({ authData }) => {
               <Flex
                 gap={3}
                 w={{ base: isSearching && '100%', sm: 'unset' }}
-                display={{ base: isSearching ? 'flex' : 'none', sm: 'flex' }}
+                display="flex"
+                opacity={{
+                  base: isSearching ? '1' : '0',
+                  sm: '1'
+                }}
                 alignItems="center"
                 ml="auto"
               >
@@ -377,6 +381,11 @@ const UsersTable = ({ authData }) => {
                     value={globalFilter ?? ''}
                     onChange={e => setGlobalFilter(e.target.value)}
                     borderColor="#999"
+                    pointerEvents={{
+                      base: isSearching ? 'auto' : 'none',
+                      sm: 'auto'
+                    }}
+                    ref={searchRef}
                   />
                   {globalFilter && (
                     <InputRightElement w={10}>
@@ -385,7 +394,10 @@ const UsersTable = ({ authData }) => {
                         display="flex"
                         color="#777"
                         size="md"
-                        onClick={() => setGlobalFilter('')}
+                        onClick={() => {
+                          setGlobalFilter('')
+                          searchRef.current.focus()
+                        }}
                       >
                         <IoCloseCircle />
                       </Button>
@@ -395,7 +407,10 @@ const UsersTable = ({ authData }) => {
                 {isSearching && (
                   <button
                     style={{ fontWeight: '500' }}
-                    onClick={() => setSearching(false)}
+                    onClick={() => {
+                      setSearching(false)
+                      setGlobalFilter('')
+                    }}
                   >
                     Cancel
                   </button>
@@ -406,7 +421,10 @@ const UsersTable = ({ authData }) => {
                 ml="auto"
                 display={{ base: isSearching ? 'none' : 'flex', sm: 'none' }}
                 icon={<BiSearchAlt2 color="#2D3748" fontSize={22} />}
-                onClick={() => setSearching(true)}
+                onClick={() => {
+                  setSearching(true)
+                  searchRef.current.focus()
+                }}
               />
             </Flex>
           </Flex>
@@ -501,7 +519,6 @@ const UsersTable = ({ authData }) => {
             alertActionName={alertActionName}
             alertActionHandle={alertActionHandle}
             setProcessing={setProcessing}
-            ref={cancelRef}
           />
         </>
       ) : (

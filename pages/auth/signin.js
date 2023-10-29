@@ -60,7 +60,6 @@ const SignIn = ({ authStatus }) => {
   useEffect(() => {
     if (authStatus === 'authenticated') {
       router.push('/settings')
-      return
     } else if (authStatus === 'unauthenticated') {
       setReady(true)
     }

@@ -4,11 +4,6 @@ import {
   Text,
   VStack,
   Heading,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   useDisclosure,
   Modal,
   ModalOverlay,
@@ -19,7 +14,9 @@ import {
   ModalCloseButton,
   Button,
   Textarea,
-  Input
+  Input,
+  useNumberInput,
+  HStack
 } from '@chakra-ui/react'
 import { BiPencil } from 'react-icons/bi'
 import { useState } from 'react'
@@ -31,8 +28,36 @@ import FormInputWrapper from 'components/form-control-wrapper'
 const ThemeBuilder = ({ themeData, handleInputChange }) => {
   const cardContents = themeData['cardContents'] || []
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
+    useNumberInput({
+      step: 1,
+      min: 0,
+      value: cardContents.length,
+      onChange: valueString => {
+        const lengthDifference =
+          parseInt(valueString) - cardContents.length || 0
+        handleInputChange(
+          'cardContents',
+          lengthDifference < 0
+            ? cardContents.slice(0, lengthDifference)
+            : [
+                ...cardContents,
+                ...Array.from({ length: lengthDifference }, (_, index) => ({
+                  placement: cardContents.length + index + 1,
+                  category: '',
+                  question: ''
+                }))
+              ]
+        )
+      }
+    })
+
   const [currentlyEditing, setCurrentlyEditing] = useState(null)
   const [editingValues, setEditingValues] = useState({})
+
+  const inc = getIncrementButtonProps()
+  const dec = getDecrementButtonProps()
+  const input = getInputProps()
 
   const handleColorChange = (palateRange, palateValue) =>
     handleInputChange('colors', {
@@ -160,36 +185,12 @@ const ThemeBuilder = ({ themeData, handleInputChange }) => {
           Card contents
         </Heading>
         <Text fontWeight="400">Number of cards</Text>
-        <NumberInput
-          size="md"
-          w="100px"
-          min={0}
-          value={cardContents.length}
-          mb={3}
-          onChange={valueString => {
-            const lengthDifference = parseInt(valueString) - cardContents.length
 
-            handleInputChange(
-              'cardContents',
-              lengthDifference < 0
-                ? cardContents.slice(0, lengthDifference)
-                : [
-                    ...cardContents,
-                    ...Array.from({ length: lengthDifference }, (_, index) => ({
-                      placement: cardContents.length + index + 1,
-                      category: '',
-                      question: ''
-                    }))
-                  ]
-            )
-          }}
-        >
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
+        <HStack maxW="200px">
+          <Button {...inc}>+</Button>
+          <Input {...input} />
+          <Button {...dec}>-</Button>
+        </HStack>
         {!!cardContents.length && (
           <DataTable
             columns={columns}

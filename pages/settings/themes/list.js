@@ -43,7 +43,7 @@ import BackLink from 'components/back-link'
 import ConfirmationDialog from 'components/confirm-dialog'
 import LoadingTag from 'components/loading-tag'
 
-const ColorsTable = ({ baseURL }) => {
+const ThemesTable = ({ baseURL }) => {
   const toast = useToast()
   const router = useRouter()
   const [SuspensionState, setSuspensionState] = useState(null)
@@ -71,7 +71,7 @@ const ColorsTable = ({ baseURL }) => {
   const [alertActionHandle, setAlertActionHandle] = useState(undefined)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const cancelRef = useRef(null)
+  const searchRef = useRef(null)
 
   const ColorPill = ({ colorCode, colorKey, themeTitle }) => (
     <Tooltip label={`${themeTitle}'s ${colorKey}`} hasArrow>
@@ -554,7 +554,11 @@ const ColorsTable = ({ baseURL }) => {
               <Flex
                 gap={3}
                 w={{ base: isSearching && '100%', sm: 'unset' }}
-                display={{ base: isSearching ? 'flex' : 'none', sm: 'flex' }}
+                display="flex"
+                opacity={{
+                  base: isSearching ? '1' : '0',
+                  sm: '1'
+                }}
                 alignItems="center"
                 ml="auto"
               >
@@ -568,6 +572,11 @@ const ColorsTable = ({ baseURL }) => {
                     value={globalFilter ?? ''}
                     onChange={e => setGlobalFilter(e.target.value)}
                     borderColor="#999"
+                    pointerEvents={{
+                      base: isSearching ? 'auto' : 'none',
+                      sm: 'auto'
+                    }}
+                    ref={searchRef}
                   />
                   {globalFilter && (
                     <InputRightElement w={10}>
@@ -576,7 +585,10 @@ const ColorsTable = ({ baseURL }) => {
                         display="flex"
                         color="#777"
                         size="md"
-                        onClick={() => setGlobalFilter('')}
+                        onClick={() => {
+                          setGlobalFilter('')
+                          searchRef.current.focus()
+                        }}
                       >
                         <IoCloseCircle />
                       </Button>
@@ -586,7 +598,10 @@ const ColorsTable = ({ baseURL }) => {
                 {isSearching && (
                   <button
                     style={{ fontWeight: '500' }}
-                    onClick={() => setSearching(false)}
+                    onClick={() => {
+                      setSearching(false)
+                      setGlobalFilter('')
+                    }}
                   >
                     Cancel
                   </button>
@@ -598,7 +613,10 @@ const ColorsTable = ({ baseURL }) => {
                 variant="transparent"
                 display={{ base: isSearching ? 'none' : 'flex', sm: 'none' }}
                 icon={<BiSearchAlt2 color="#2D3748" fontSize={22} />}
-                onClick={() => setSearching(true)}
+                onClick={() => {
+                  setSearching(true)
+                  searchRef.current.focus()
+                }}
               />
               {!isSearching && (
                 <NextLink
@@ -709,7 +727,6 @@ const ColorsTable = ({ baseURL }) => {
             alertActionName={alertActionName}
             alertActionHandle={alertActionHandle}
             setProcessing={setProcessing}
-            ref={cancelRef}
           />
         </>
       ) : (
@@ -721,9 +738,9 @@ const ColorsTable = ({ baseURL }) => {
   )
 }
 
-ColorsTable.auth = {
+ThemesTable.auth = {
   authenticate: true,
   isAdmin: true
 }
 
-export default ColorsTable
+export default ThemesTable
