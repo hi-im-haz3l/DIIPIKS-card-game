@@ -277,12 +277,12 @@ const DataTable = ({
           <IconButton
             icon={<BsChevronBarLeft />}
             onClick={() => gotoPage(0)}
-            disabled={!canPreviousPage}
+            isDisabled={!canPreviousPage}
           />
           <IconButton
             icon={<BsChevronLeft />}
             onClick={previousPage}
-            disabled={!canPreviousPage}
+            isDisabled={!canPreviousPage}
           />
           <Flex align="center" mx={3}>
             <Text as="strong" ml={2} fontSize={15} whiteSpace="nowrap">
@@ -293,12 +293,12 @@ const DataTable = ({
           <IconButton
             icon={<BsChevronRight />}
             onClick={nextPage}
-            disabled={!canNextPage}
+            isDisabled={!canNextPage}
           />
           <IconButton
             icon={<BsChevronBarRight />}
             onClick={() => gotoPage(pageCount - 1)}
-            disabled={!canNextPage}
+            isDisabled={!canNextPage}
           />
         </ButtonGroup>
         <Flex
