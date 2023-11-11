@@ -27,6 +27,13 @@ import FormInputWrapper from 'components/form-control-wrapper'
 
 const ThemeBuilder = ({ themeData, handleInputChange }) => {
   const cardContents = themeData['cardContents'] || []
+  const endCard = themeData['endCard'] || {
+    placement: 'End',
+    category: 'Thanks for playing!',
+    question:
+      'You have reached the end of the deck. Wanna give it another swing?'
+  }
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
     useNumberInput({
@@ -66,6 +73,10 @@ const ThemeBuilder = ({ themeData, handleInputChange }) => {
     })
 
   const handleCardContent = (index, newValue) => {
+    if (index === endCard['placement']) {
+      return handleInputChange('endCard', { ...endCard, ...newValue })
+    }
+
     handleInputChange(
       'cardContents',
       cardContents.map(cardContent =>
@@ -191,29 +202,33 @@ const ThemeBuilder = ({ themeData, handleInputChange }) => {
           <Input {...input} />
           <Button {...dec}>-</Button>
         </HStack>
-        {!!cardContents.length && (
-          <DataTable
-            columns={columns}
-            data={cardContents}
-            onRowClick={rowData => {
-              if (rowData?.placement) {
-                setCurrentlyEditing(rowData.placement - 1)
-                setEditingValues({
-                  category: rowData?.category || '',
-                  question: rowData?.question || ''
-                })
-                onOpen()
-              }
-            }}
-            hasHoverIcon
-          />
-        )}
+
+        <DataTable
+          columns={columns}
+          data={!!cardContents.length ? [...cardContents, endCard] : []}
+          onRowClick={rowData => {
+            if (rowData?.placement) {
+              setCurrentlyEditing(
+                rowData.index !== cardContents.length
+                  ? rowData.index
+                  : endCard['placement']
+              )
+              setEditingValues(rowData)
+              onOpen()
+            }
+          }}
+          hasHoverIcon
+        />
       </VStack>
       {isOpen && (
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>{`Card #${currentlyEditing + 1}`}</ModalHeader>
+            <ModalHeader>
+              {currentlyEditing !== endCard['placement']
+                ? `Card #${editingValues['placement']}`
+                : `${editingValues['placement']} card`}
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Text fontWeight="400">Category</Text>
@@ -226,7 +241,9 @@ const ThemeBuilder = ({ themeData, handleInputChange }) => {
                   }))
                 }
               />
-              <Text fontWeight="400">Question</Text>
+              <Text fontWeight="400" mt={2}>
+                Question
+              </Text>
               <Textarea
                 value={editingValues['question']}
                 onChange={e =>
@@ -236,6 +253,7 @@ const ThemeBuilder = ({ themeData, handleInputChange }) => {
                   }))
                 }
                 resize="vertical"
+                minH={150}
               />
             </ModalBody>
 

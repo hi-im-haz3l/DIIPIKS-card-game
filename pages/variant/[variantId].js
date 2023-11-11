@@ -7,7 +7,7 @@ import clsx from 'clsx'
 
 import { MdArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md'
 
-import { Button, Container, Center } from '@chakra-ui/react'
+import { Container, Center } from '@chakra-ui/react'
 import LoadingTag from 'components/loading-tag'
 
 import { shuffleArray } from 'utils/array'
@@ -42,20 +42,14 @@ const GameVariant = () => {
       axios
         .get(`/api/utils/fetch-theme-by-id-public?_id=${variantId}`)
         .then(response => {
-          const { cardContents, ...themeData } = response.data || {}
+          const { cardContents, endCard, ...themeData } = response.data || {}
           setFetchingTheme(false)
           setTheme(themeData)
 
           shuffleArray(cardContents)
-          const shuffledArray = [
-            ...cardContents,
-            {
-              placement: cardContents.length + 1,
-              category: 'Thanks for playing!',
-              question:
-                'You have reached the end of the deck. Wanna give it another swing?'
-            }
-          ].map((cardContent, index) => ({ ...cardContent, order: index + 1 }))
+          const shuffledArray = [...cardContents, endCard].map(
+            (cardContent, index) => ({ ...cardContent, order: index + 1 })
+          )
           setCards(shuffledArray)
         })
     }
@@ -92,7 +86,10 @@ const GameVariant = () => {
       ) : (
         <div className="DIIPIKS-card-game-container">
           <span className="card-count">
-            {cards[0]?.order || 0}/{cards.length}
+            {typeof cards[0]?.placement !== 'string'
+              ? cards[0]?.order || 0
+              : cards[0]?.placement}
+            /{cards.length - 1}
           </span>
           <ul className="DIIPIKS-cards-list">
             {cards.map(({ placement, category, question } = {}, index) => {
@@ -109,7 +106,14 @@ const GameVariant = () => {
                   animate={{
                     rotate: !canDrag ? `3deg` : undefined,
                     zIndex: cards.length - index,
-                    opacity: index <= 4 ? 1 - index * 0.2 : 0
+                    opacity:
+                      typeof cards[0].placement !== 'string'
+                        ? index <= 4
+                          ? 1 - index * 0.2
+                          : 0
+                        : canDrag
+                        ? 1
+                        : 0
                   }}
                   drag={canDrag && 'x'}
                   dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -171,32 +175,40 @@ const GameVariant = () => {
               )
             })}
           </ul>
-          <div className="DIIPIKS-navigation-buttons">
-            <Button
-              pl={2}
-              variant="transparent"
-              leftIcon={<MdArrowBackIosNew />}
-              borderWidth="2px"
-              borderStyle="dashed"
-              borderColor={velocityX < 0 ? '#000000' : '#00000000'}
-              _active={{ borderColor: '#000000' }}
-              onClick={() => moveCard('back')}
+          <button
+            className={clsx(
+              { click: velocityX === 0 },
+              'DIIPIKS-navigation-button back'
+            )}
+            onClick={() => moveCard('back')}
+          >
+            <motion.span
+              animate={{
+                x: [-2, -5, -2]
+              }}
+              transition={{ ease: 'easeInOut', duration: 2, repeat: Infinity }}
+              style={{ borderColor: velocityX < 0 ? '#555' : '#00000000' }}
             >
-              Back
-            </Button>
-            <Button
-              pr={2}
-              variant="transparent"
-              rightIcon={<MdArrowForwardIos />}
-              borderWidth="2px"
-              borderStyle="dashed"
-              borderColor={velocityX > 0 ? '#000000' : '#00000000'}
-              _active={{ borderColor: '#000000' }}
-              onClick={() => moveCard('next')}
+              <MdArrowBackIosNew />
+            </motion.span>
+          </button>
+          <button
+            className={clsx(
+              { click: velocityX === 0 },
+              'DIIPIKS-navigation-button next'
+            )}
+            onClick={() => moveCard('next')}
+          >
+            <motion.span
+              animate={{
+                x: [2, 5, 2]
+              }}
+              transition={{ ease: 'easeInOut', duration: 2, repeat: Infinity }}
+              style={{ borderColor: velocityX > 0 ? '#555' : '#00000000' }}
             >
-              Next
-            </Button>
-          </div>
+              <MdArrowForwardIos />
+            </motion.span>
+          </button>
         </div>
       )}
     </Container>

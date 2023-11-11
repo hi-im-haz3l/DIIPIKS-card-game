@@ -4,7 +4,6 @@ import { SessionProvider } from 'next-auth/react'
 
 import Layout from 'layouts/main'
 import AuthWrapper from 'layouts/auth-wrapper'
-import Fonts from 'components/fonts'
 import Theme from 'lib/theme'
 
 import 'lib/styles.css'
@@ -17,7 +16,6 @@ const CardGame = ({ Component, pageProps: { session, ...pageProps } }) => {
 
   return (
     <ChakraProvider theme={Theme}>
-      <Fonts />
       <Layout>
         <AnimatePresence>
           {Component.auth ? (

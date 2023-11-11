@@ -14,30 +14,6 @@
   background-color: #9f9f9f;
 }
 
-.DIIPIKS-navbar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  padding-left: 12px;
-  padding-right: 8px;
-  margin: 0 auto;
-  z-index: 1;
-}
-
-.DIIPIKS-link {
-  display: inline-block;
-  padding: 16px 0;
-  height: 58px;
-}
-
-.DIIPIKS-logo {
-  height: 100%;
-  width: auto;
-}
-
 .DIIPIKS-card-game-container {
   position: relative;
   flex-grow: 1;
@@ -53,15 +29,15 @@
 .DIIPIKS-cards-list {
   position: relative;
   height: auto;
-  width: 230px;
+  width: min(80vw, 400px);
   aspect-ratio: 18/25;
-  margin-bottom: 30px;
+  margin-bottom: 10vh;
 }
 
 .DIIPIKS-card {
   position: absolute;
   height: auto;
-  width: 230px;
+  width: min(80vw, 400px);
   border-radius: 8px;
   list-style: none;
   aspect-ratio: 18/25;
@@ -124,10 +100,11 @@
   width: 100%;
   height: 100%;
   padding: 25px;
+  margin-top: 25px;
 }
 
 .DIIPIKS-card-category {
-  margin-bottom: 15px;
+  margin-bottom: 40px;
 }
 
 .DIIPIKS-card-category,
@@ -138,108 +115,42 @@
 }
 
 .card-count {
-  font-weight: 500;
-  margin-right: 180px;
-  margin-bottom: 0.5rem;
-  font-size: 16px;
-}
-
-.DIIPIKS-navigation-buttons {
-  width: 250px;
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 100px;
-}
-
-.DIIPIKS-top-controls {
-  margin-left: auto;
-}
-
-.DIIPIKS-theme-select-container {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 10% 15px;
-  z-index: 1;
-  transition: 0.2s ease-in-out;
-}
-
-.DIIPIKS-theme-slider-wrapper {
-  position: relative;
-}
-
-.DIIPIKS-theme-select-container:hover
-  div.DIIPIKS-theme-slider.scroll
-  > button.carousel-navigation {
-  display: flex;
-}
-
-.DIIPIKS-theme-name {
-  display: block;
-  text-align: center;
-  font-weight: 500;
-  margin-bottom: 7px;
-}
-
-.DIIPIKS-theme-slider {
-  margin: 0 auto;
-  height: 50px;
-  width: 100%;
-  max-width: 400px;
-}
-.DIIPIKS-theme-slider.scroll {
-  border-radius: 0.5em;
-  box-shadow: #000 20px 0 20px -30px inset, #000 -20px 0 20px -30px inset;
-}
-
-.theme-color-hero {
-  width: 40px;
-  height: auto;
-  aspect-ratio: 1;
-  margin: 5px 10px;
-  outline-style: solid;
-  outline-color: #333;
-  border-radius: 100%;
-  transition: outline 1s;
-}
-
-.selected-theme-container {
   position: absolute;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
-  z-index: -1;
-}
-.selected-theme-ring {
-  display: block;
-  margin: auto;
-  height: 100%;
-  width: auto;
-  aspect-ratio: 1;
-  border: 3px solid #fff;
-  border-radius: 100%;
+  font-weight: 700;
+  margin: 12px 8px;
+  font-size: 20px;
 }
 
-.DIIPIKS-hint {
+.DIIPIKS-navigation-button {
   position: absolute;
-  right: 0;
+  top: 0;
   bottom: 0;
+  z-index: 7;
+}
+.DIIPIKS-navigation-button > span {
+  display: flex;
+  border-width: 2px;
+  border-style: dashed;
+  border-radius: 100%;
+  transition: border-color 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+  margin-bottom: 10vh;
+}
+.DIIPIKS-navigation-button.click:hover > span,
+.DIIPIKS-navigation-button.click:active > span {
+  border-color: #000 !important;
+}
+.DIIPIKS-navigation-button > span > svg {
+  margin: 10px;
+}
+.DIIPIKS-navigation-button.back {
   left: 0;
-  padding-bottom: 8px;
-  padding-left: 12px;
-  margin: 0 auto;
-  z-index: 1;
+  padding-right: 100px;
 }
-
-.hint-text {
-  padding: 0 4px;
-  font-weight: 500;
-}
-.hint-text.separator {
-  padding-left: 3px;
-  padding-right: 5px;
+.DIIPIKS-navigation-button.next {
+  right: 0;
+  padding-left: 100px;
 }
 
 .table-row:hover .table-row-hover-icon {

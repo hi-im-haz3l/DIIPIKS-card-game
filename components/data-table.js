@@ -32,49 +32,6 @@ import {
 } from 'react-icons/bs'
 import ReactSelect from 'react-select'
 
-const EmptyRow = ({ colSpan, text }) => {
-  return (
-    <Tr bgColor="gray.100">
-      <Td colSpan={colSpan}>
-        <Flex w="full" justify="center" py="100px">
-          <Text fontSize="sm">{text}</Text>
-        </Flex>
-      </Td>
-    </Tr>
-  )
-}
-
-const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
-  const defaultRef = useRef()
-  const resolvedRef = ref || defaultRef
-
-  useEffect(() => {
-    resolvedRef.current.indeterminate = indeterminate
-  }, [resolvedRef, indeterminate])
-
-  return (
-    <Checkbox
-      key={Math.random()}
-      isChecked={rest.checked}
-      isIndeterminate={indeterminate}
-      ref={resolvedRef}
-      {...rest}
-    />
-  )
-})
-
-const colourStyles = {
-  option: (provided, state) => ({
-    ...provided,
-    background: state.isSelected && '#3182ce'
-  }),
-  control: base => ({
-    ...base,
-    borderRadius: '.375em',
-    borderColor: '#e2e8f0'
-  })
-}
-
 const DataTable = ({
   columns,
   data,
@@ -140,6 +97,51 @@ const DataTable = ({
         ])
     }
   )
+
+  const EmptyRow = ({ colSpan, text }) => {
+    return (
+      <Tr bgColor="gray.100">
+        <Td colSpan={colSpan}>
+          <Flex w="full" justify="center" py="50px">
+            <Text fontSize="sm">{text}</Text>
+          </Flex>
+        </Td>
+      </Tr>
+    )
+  }
+
+  const IndeterminateCheckbox = forwardRef(
+    ({ indeterminate, ...rest }, ref) => {
+      const defaultRef = useRef()
+      const resolvedRef = ref || defaultRef
+
+      useEffect(() => {
+        resolvedRef.current.indeterminate = indeterminate
+      }, [resolvedRef, indeterminate])
+
+      return (
+        <Checkbox
+          key={Math.random()}
+          isChecked={rest.checked}
+          isIndeterminate={indeterminate}
+          ref={resolvedRef}
+          {...rest}
+        />
+      )
+    }
+  )
+
+  const colourStyles = {
+    option: (provided, state) => ({
+      ...provided,
+      background: state.isSelected && '#3182ce'
+    }),
+    control: base => ({
+      ...base,
+      borderRadius: '.375em',
+      borderColor: '#e2e8f0'
+    })
+  }
 
   useMountedLayoutEffect(() => {
     onChangeSelectedRowsId && onChangeSelectedRowsId(selectedRowIds)
@@ -231,7 +233,10 @@ const DataTable = ({
                       position: hasHoverIcon && 'relative'
                     }
                   }
-                  onClick={() => onRowClick && onRowClick(row.original)}
+                  onClick={() =>
+                    onRowClick &&
+                    onRowClick({ ...row.original, index: row.index })
+                  }
                   cursor={onRowClick && 'pointer'}
                 >
                   {row.cells.map((cell, idx) => {
@@ -286,8 +291,8 @@ const DataTable = ({
           />
           <Flex align="center" mx={3}>
             <Text as="strong" ml={2} fontSize={15} whiteSpace="nowrap">
-              {pageIndex * 10 + (page.length && 1)} -{' '}
-              {pageIndex * 10 + page.length} of {pageOptions?.length}
+              {pageIndex * pageSize + (page.length && 1)} -{' '}
+              {pageIndex * pageSize + page.length} of {data.length}
             </Text>
           </Flex>
           <IconButton
