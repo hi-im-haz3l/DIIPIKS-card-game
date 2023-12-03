@@ -1,16 +1,15 @@
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import move from 'lodash-move'
 import clsx from 'clsx'
-
-import { MdArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md'
 
 import { Container, Center } from '@chakra-ui/react'
 import LoadingTag from 'components/loading-tag'
 
 import { shuffleArray } from 'utils/array'
+import { useResizeObserverRef } from 'utils/hook'
 
 const GameVariant = () => {
   const router = useRouter()
@@ -26,13 +25,34 @@ const GameVariant = () => {
   const [animating, setAnimating] = useState(null)
   const [velocityX, setVelocityX] = useState(0)
 
+  const [containerBounding, setContainerBounding] = useState({})
+
+  const containerRef = useResizeObserverRef(bounding =>
+    setContainerBounding(bounding)
+  )
+
+  const { width: containerWidth, height: containerHeight } =
+    containerBounding || {}
+
+  const cardAspectRatio = 18 / 25
+  const cardWidth = 400
+  const cardHeight = cardWidth / cardAspectRatio
+
+  const containerScale = useMemo(
+    () =>
+      Math.min(containerWidth / cardWidth, containerHeight / cardHeight, 1.5),
+    [containerWidth, containerHeight]
+  )
+
   const moveCard = direction => {
     setCards(prevState => {
       if (direction === 'next') {
         return move(prevState, 0, prevState.length - 1)
+      } else if (cards[0].order != 1) {
+        return move(prevState, prevState.length - 1, 0)
       }
 
-      return move(prevState, prevState.length - 1, 0)
+      return prevState
     })
   }
 
@@ -84,131 +104,141 @@ const GameVariant = () => {
           <LoadingTag m="auto" />
         </Center>
       ) : (
-        <div className="DIIPIKS-card-game-container">
-          <span className="card-count">
-            {typeof cards[0]?.placement !== 'string'
-              ? cards[0]?.order || 0
-              : cards[0]?.placement}
-            /{cards.length - 1}
-          </span>
-          <ul className="DIIPIKS-cards-list">
-            {cards.map(({ placement, category, question } = {}, index) => {
-              const canDrag = index === 0
+        <div className="DIIPIKS-card-game-container" ref={containerRef}>
+          <div
+            className="DIIPIKS-cards-deck"
+            style={{
+              width: cardWidth,
+              aspectRatio: cardAspectRatio,
+              transform: `scale(${containerScale.toFixed(2)})`
+            }}
+          >
+            <button
+              className="DIIPIKS-navigation-button back"
+              onClick={() => moveCard('back')}
+            >
+              <motion.span
+                animate={{
+                  x: [-2, -5, -2]
+                }}
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 2,
+                  repeat: Infinity
+                }}
+                style={{ borderColor: velocityX < 0 ? '#555' : '#00000000' }}
+              />
+            </button>
+            <button
+              className="DIIPIKS-navigation-button next"
+              onClick={() => moveCard('next')}
+            >
+              <motion.span
+                animate={{
+                  x: [2, 5, 2]
+                }}
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 2,
+                  repeat: Infinity
+                }}
+                style={{ borderColor: velocityX > 0 ? '#555' : '#00000000' }}
+              />
+            </button>
+            <ul className="DIIPIKS-cards-list">
+              {cards.map(({ placement, category, question } = {}, index) => {
+                const canDrag = index === 0
 
-              return (
-                <motion.li
-                  key={`DIIPIKS-card-${placement}`}
-                  layoutId={`DIIPIKS-card-${placement}`}
-                  className={clsx(
-                    { reveal: canDrag && !isDragging },
-                    'DIIPIKS-card'
-                  )}
-                  animate={{
-                    rotate: !canDrag ? `3deg` : undefined,
-                    zIndex: cards.length - index,
-                    opacity:
-                      typeof cards[0].placement !== 'string'
-                        ? index <= 4
-                          ? 1 - index * 0.2
+                return (
+                  <motion.li
+                    key={`DIIPIKS-card-${placement}`}
+                    layoutId={`DIIPIKS-card-${placement}`}
+                    className={clsx(
+                      { reveal: canDrag && !isDragging },
+                      'DIIPIKS-card'
+                    )}
+                    animate={{
+                      zIndex: cards.length - index,
+                      opacity:
+                        typeof cards[0].placement !== 'string'
+                          ? index <= 4
+                            ? 1 - index * 0.2
+                            : 0
+                          : canDrag
+                          ? 1
                           : 0
-                        : canDrag
-                        ? 1
-                        : 0
-                  }}
-                  drag={canDrag && 'x'}
-                  dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                  onDrag={(e, { velocity }) => setVelocityX(velocity.x)}
-                  onDragStart={() => setDragging(true)}
-                  onDragEnd={(e, { offset, velocity }) => {
-                    setDragging(false)
-                    setAnimating(placement)
-
-                    const swipe = Math.abs(offset.x * velocity.x)
-                    if (swipe > ConfidenceThreshold) {
-                      moveCard(offset.x > 0 ? 'next' : 'back')
-                      setVelocityX(0)
-                    }
-                  }}
-                  onDragTransitionEnd={() => setAnimating(false)}
-                  style={{
-                    cursor: canDrag ? 'grab' : 'auto',
-                    filter: canDrag ? 'brightness(1)' : 'brightness(.95)',
-                    pointerEvents:
-                      !isDragging && animating === placement ? 'none' : 'auto'
-                  }}
-                  whileTap={{ scale: canDrag && 1.1 }}
-                  dragSnapToOrigin
-                >
-                  <div
-                    className="DIIPIKS-card-inner"
-                    style={{
-                      cursor: canDrag ? 'grab' : 'auto'
                     }}
+                    drag={canDrag && 'x'}
+                    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                    onDrag={(e, { velocity }) => setVelocityX(velocity.x)}
+                    onDragStart={() => setDragging(true)}
+                    onDragEnd={(e, { offset, velocity }) => {
+                      setDragging(false)
+                      setAnimating(placement)
+
+                      const swipe = Math.abs(offset.x * velocity.x)
+                      if (swipe > ConfidenceThreshold) {
+                        moveCard(offset.x > 0 ? 'next' : 'back')
+                        setVelocityX(0)
+                      }
+                    }}
+                    onDragTransitionEnd={() => setAnimating(false)}
+                    style={{
+                      cursor: canDrag ? 'grab' : 'auto',
+                      filter: canDrag ? 'brightness(1)' : 'brightness(.95)',
+                      pointerEvents:
+                        !isDragging && animating === placement
+                          ? 'none'
+                          : 'auto',
+                      width: cardWidth,
+                      aspectRatio: cardAspectRatio
+                    }}
+                    whileTap={{ scale: canDrag && 1.1 }}
+                    dragSnapToOrigin
                   >
                     <div
-                      className="DIIPIKS-card-front"
+                      className="DIIPIKS-card-inner"
                       style={{
-                        boxShadow: canDrag && '#00000025 0 0 7px 5px',
-                        backgroundImage: `url(${cardDesigns['front']})`,
-                        backgroundColor: colors['primary']
+                        cursor: canDrag ? 'grab' : 'auto'
                       }}
                     >
-                      <div className="DIIPIKS-card-content">
-                        <span className="DIIPIKS-card-category">
-                          {category}
-                        </span>
-                        <span className="DIIPIKS-card-question">
-                          {question}
-                        </span>
+                      <div
+                        className="DIIPIKS-card-front"
+                        style={{
+                          boxShadow: canDrag && '#00000025 0 0 7px 5px',
+                          backgroundImage: `url(${cardDesigns['front']})`,
+                          backgroundColor: colors['primary']
+                        }}
+                      >
+                        <div className="DIIPIKS-card-content">
+                          <span className="DIIPIKS-cards-count">
+                            {typeof cards[0]?.placement === 'string'
+                              ? cards[0]?.placement
+                              : cards[0]?.order || 0}
+                            /{cards.length - 1}
+                          </span>
+                          <span className="DIIPIKS-card-category">
+                            {category}
+                          </span>
+                          <span className="DIIPIKS-card-question">
+                            {question}
+                          </span>
+                        </div>
                       </div>
+                      <div
+                        className="DIIPIKS-card-rear"
+                        style={{
+                          boxShadow: canDrag && '#00000025 0 0 7px 5px',
+                          backgroundImage: `url(${cardDesigns['rear']})`,
+                          backgroundColor: colors['primary']
+                        }}
+                      />
                     </div>
-                    <div
-                      className="DIIPIKS-card-rear"
-                      style={{
-                        boxShadow: canDrag && '#00000025 0 0 7px 5px',
-                        backgroundImage: `url(${cardDesigns['rear']})`,
-                        backgroundColor: colors['primary']
-                      }}
-                    />
-                  </div>
-                </motion.li>
-              )
-            })}
-          </ul>
-          <button
-            className={clsx(
-              { click: velocityX === 0 },
-              'DIIPIKS-navigation-button back'
-            )}
-            onClick={() => moveCard('back')}
-          >
-            <motion.span
-              animate={{
-                x: [-2, -5, -2]
-              }}
-              transition={{ ease: 'easeInOut', duration: 2, repeat: Infinity }}
-              style={{ borderColor: velocityX < 0 ? '#555' : '#00000000' }}
-            >
-              <MdArrowBackIosNew />
-            </motion.span>
-          </button>
-          <button
-            className={clsx(
-              { click: velocityX === 0 },
-              'DIIPIKS-navigation-button next'
-            )}
-            onClick={() => moveCard('next')}
-          >
-            <motion.span
-              animate={{
-                x: [2, 5, 2]
-              }}
-              transition={{ ease: 'easeInOut', duration: 2, repeat: Infinity }}
-              style={{ borderColor: velocityX > 0 ? '#555' : '#00000000' }}
-            >
-              <MdArrowForwardIos />
-            </motion.span>
-          </button>
+                  </motion.li>
+                )
+              })}
+            </ul>
+          </div>
         </div>
       )}
     </Container>
